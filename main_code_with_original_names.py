@@ -37,7 +37,7 @@ class JointStateSubscriber(Node):
         index = joint_state_msg.name.index(joint_name)
         return joint_state_msg.position[index]
 
-    def is_arm_in_stowed_position(self, arm_values):
+    def checking_if_the_position_of_arm_is_stowed_or_not(self, arm_values): test_gripper_evaluation_when_gripper_is_close_to_closed_position_should_return_true
         joint_stowed = [
             abs(real - desired) < 0.1
             for real, desired in zip(arm_values, self.arm_stowed_values)
@@ -45,7 +45,7 @@ class JointStateSubscriber(Node):
 
         return all(joint_stowed)
 
-    def is_position_within_gripper_range(self, gripper_position):
+    def checking_if_the_gripper_is_open_or_closed_position(self, gripper_position):
        # return (gripper_position < -0.03)
         return -0.04 <= gripper_position <= -0.02
 
@@ -60,11 +60,11 @@ class JointStateSubscriber(Node):
             )
 
         gripper_open_msg = Bool()
-        gripper_open_msg.data = self.is_position_within_gripper_range(gripper_position)
+        gripper_open_msg.data = self.checking_if_the_gripper_is_open_or_closed_position(gripper_position)
         self.gripper_open_publisher.publish(gripper_open_msg)
 
         arm_values = [self.get_joint_position(joint, msg) for joint in self.arm_joints]
-        arm_stowed = self.is_arm_in_stowed_position(arm_values)
+        arm_stowed = self.checking_if_the_position_of_arm_is_stowed_or_not(arm_values)
         arm_stowed_msg = Bool()
         arm_stowed_msg.data = arm_stowed
         self.arm_stowed_publisher.publish(arm_stowed_msg)
